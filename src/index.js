@@ -29,7 +29,7 @@ const {startDatabase} = require('./database/mongo');
 const {insertAd, getAds} = require('./database/ads');
 
 // defining an endpoint to return all ads
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     res.send(await getAds());
 });
 
