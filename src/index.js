@@ -28,11 +28,30 @@ app.use(morgan('combined'));
 const {startDatabase} = require('./database/mongo');
 const {insertAd, getAds} = require('./database/ads');
 const {deleteAd, updateAd} = require('./database/ads');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
+
 
 // defining an endpoint to return all ads
 app.get('/', async (req, res) => {
     res.send(await getAds());
 });
+
+const checkJwt = jwt({
+    secret: jwksRsa.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: `https://dev-2plen345.us.auth0.com/.well-known/jwks.json`
+    }),
+  
+    // Validate the audience and the issuer.
+    audience: 'ligntpong-api',
+    issuer: `https://dev-2plen345.us.auth0.com/`,
+    algorithms: ['RS256']
+});
+
+app.use(checkJwt);
 
 app.post('/', async (req, res) => {
     const newAd = req.body;
