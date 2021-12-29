@@ -24,12 +24,21 @@ app.use(cors());
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
 
+
+const {startDatabase} = require('./database/mongo');
+const {insertAd, getAds} = require('./database/ads');
+
 // defining an endpoint to return all ads
 app.get('/', (req, res) => {
-  res.send(ads);
+    res.send(await getAds());
 });
 
-// starting the server
-app.listen(3001, () => {
-  console.log('listening on port 3001');
+// start the in-memory MongoDB instance
+startDatabase().then(async () => {
+    await insertAd({title: 'Hello, now from the in-memory database!'});
+  
+    // start the server
+    app.listen(3001, async () => {
+      console.log('listening on port 3001');
+    });
 });
